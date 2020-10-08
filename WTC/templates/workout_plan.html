@@ -34,7 +34,7 @@
                       <div class="relative w-full mb-3">
                         
                         {{form.add.label(class="block uppercase text-gray-700 text-xs font-bold mb-2")}}
-                        {{form.add(class="px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full", placeholder="Email",
+                        {{form.add(class="px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:shadow-outline w-full", placeholder="ADD EXCERCISE HERE",
                                        style="transition: all 0.15s ease 0s;")}}
     
                       </div>
@@ -47,10 +47,11 @@
                     </form>
                     <div class="mt-2">
                         <ul>
-                            {% for add in addedexcerise %}
-                                    <li>{{add}} <span> <a href="{{url_for('users.delete',workoutplan_id=add.id)}}" class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-3 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ml-6 w-full"><i class="fas fa-trash"></i></a></span> </li>
+                            {% for user_excerise in addedexcerise_db %}
+                                    <li class="block uppercase text-gray-700 text-xs font-bold mb-2 pl-7">{{user_excerise}} <span class="ml-10"> <a href="{{url_for('users.delete',workoutplan_id=user_excerise.id)}}" class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-3 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-6 ml-6 w-full"><i class="fas fa-trash "></i></a>  </span> </li>
                             {% endfor %}
-                            </ul>  
+                            </ul> 
+                           
                       </div>
                   </div>
                 </div>

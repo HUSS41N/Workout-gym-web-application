@@ -1,7 +1,7 @@
 from flask import render_template,redirect,url_for,Blueprint,flash,abort,request
 from WTC.users.forms import RegistrationForm,LoginForm,WorkoutPlan
 from WTC import db
-from flask_login import login_user,login_required,logout_user
+from flask_login import login_user,login_required,logout_user,current_user
 from WTC.models import User,WorkoutPlanModel
 
 users = Blueprint('users',__name__)
@@ -42,30 +42,36 @@ def logout():
     flash('You are logged out!')
     return redirect(url_for('core.index'))
 
-@users.route('/make-workout-routine',methods=['GET','POST'])
-def workoutplan():
+@users.route('/<username>/make-workout-routine',methods=['GET','POST'])
+@login_required
+def workoutplan(username):
+    
+    
+
     form = WorkoutPlan()
 
     if form.validate_on_submit():
-        add = WorkoutPlanModel(add=form.add.data)
+        add = WorkoutPlanModel(add=form.add.data,user_id=current_user.id)
         db.session.add(add)
         db.session.commit()
         flash('Workout Added')
-        return redirect(url_for('users.workoutplan'))
+        return redirect(url_for('users.workoutplan',username=username, **request.args))
     #grabbing all the added workouts to display them on template
-    addedexcerise = WorkoutPlanModel.query.all()
+    user = User.query.filter_by(username=username).first_or_404()
+    addedexcerise_db = WorkoutPlanModel.query.filter_by(user_added_workout=user)
 
-    return render_template('workout_plan.html',form=form,addedexcerise=addedexcerise)
+    return render_template('workout_plan.html',form=form,addedexcerise_db=addedexcerise_db,user=user)
 
-# @app.route('/<int:todos_id>/delete',methods=['GET','POST'])
-# def delete(todos_id):
-#     deletetodo = TodoList.query.get_or_404(todos_id)
-#     db.session.delete(deletetodo)
-#     db.session.commit()
-#     return redirect(url_for('index'))
+
 @users.route('/<int:workoutplan_id>/delete',methods=['GET','POST'])
 def delete(workoutplan_id):
     delete_excerise = WorkoutPlanModel.query.get_or_404(workoutplan_id)
     db.session.delete(delete_excerise)
     db.session.commit()
-    return redirect(url_for('users.workoutplan'))
+    username=current_user.username
+    return redirect(url_for('users.workoutplan',username=username, **request.args))
+
+@users.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')

@@ -3,6 +3,7 @@ from enum import unique
 from WTC import db,login_manager
 from werkzeug import generate_password_hash,check_password_hash
 from flask_login import UserMixin
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -16,6 +17,8 @@ class User(db.Model,UserMixin):
     billing_adress = db.Column(db.String(256),index=True)
     pincode = db.Column(db.Integer(),index=True)
     hash_password = db.Column(db.String(128))
+
+    workout = db.relationship('WorkoutPlanModel',backref='user_added_workout',lazy=True)
 
     def __init__(self,email,username,billing_adress,pincode,password):
         self.email = email
@@ -34,9 +37,12 @@ class User(db.Model,UserMixin):
 class WorkoutPlanModel(db.Model):
     __tablename__ = 'workoutplan'
     id = db.Column(db.Integer,primary_key=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'),nullable = False)
     add = db.Column(db.String(128),index=True)
-
-    def __init__(self,add):
+    date = db.Column(db.DateTime,nullable=False,default=datetime.utcnow)
+   
+    def __init__(self,user_id,add):
+        self.user_id = user_id
         self.add = add
     
     def __repr__(self):
